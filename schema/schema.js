@@ -1,7 +1,7 @@
 const graphiql = require('graphql');
 const _ = require('lodash');
-const { SignUps } = require('../model/schemas');
-const { Logins } = require('../model/schemas');
+const MongooseSignUpSchema = require('../model/mongoSchemas');
+const { Logins } = require('../model/mongoSchemas');
 
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList } = graphiql;
 
@@ -14,7 +14,7 @@ const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList } = graphiq
 //     {name: 'Oalekan', email: 'oayeni77@gmail.com', username: 'balooo', password: '@03jnb3jrj', id: '05'},
 // ]
 
-const SignUp = new GraphQLObjectType({
+const SignUpType = new GraphQLObjectType({
     name: 'UserSignUp',
     fields: () => ({
         id: { type: GraphQLString},
@@ -38,46 +38,56 @@ const RootQueryType = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
         usersignup: {
-            type: SignUp,
+            type: SignUpType,
             args: {id: {type: GraphQLString}},
-            resolve(parents, args){
+            resolve(parent, args){
                 //code here
-               return _.find(Users, { id: args.id })
+            //    return _.find(Users, { id: args.id })
             }
         },
         userlogin: {
             type: Login,
             args: {id: {type: GraphQLString}},
-            resolve(parents, args){
+            resolve(parent, args){
                 //code here
-               return _.find(Users, { id: args.id })
+            //    return _.find(Users, { id: args.id })
+            }
+        },
+        Users: {
+            type: new graphiql.GraphQLList(SignUpType),
+            resolve(parent, args){
+                return Users;
             }
         }
-        // Users: {
-        //     type: new graphiql.GraphQLList(SignUp),
-        //     resolve(parents, args){
-        //         return Users;
-        //     }
-        // }
     }
 });
 
 
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
-    field: {
+    fields: {
         addUser: {
-            type: SignUp,
+            type: SignUpType,
             args: {
                 name: { type: GraphQLString },
                 email: { type: GraphQLString},
                 username: { type: GraphQLString},
                 password: { type: GraphQLString},
+            },
+            resolve(parent, args){
+                let signUp = new MongooseSignUpSchema({
+                    name: args.name,
+                    email: args.email,
+                    username: args.username,
+                    password: args.password
+                });
+                return signUp.save(); 
             }
         }
     }
 })
 
 module.exports= new GraphQLSchema({
-    query: RootQueryType
+    query: RootQueryType,
+    mutation: Mutation
 })
