@@ -1,16 +1,18 @@
 const graphiql = require('graphql');
-const _ = require('lodash')
+const _ = require('lodash');
+const { SignUps } = require('../model/schemas');
+const { Logins } = require('../model/schemas');
 
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList } = graphiql;
 
 //Dummy Data
-let Users = [
-    {name: 'Olalekan', email: 'yayeni77@gmail.com', username: 'talooo', password: 'a03jkkj1rj', id: '01'},
-    {name: 'Elalean', email: 'ayeni77@gmail.com', username: 'zalooo', password: '@hgds23jrj', id: '02'},
-    {name: 'lalekan', email: 'oyeni77@gmail.com', username: 'yalooo', password: '@Oauyrjrj', id: '03'},
-    {name: 'yelekan', email: 'gooyeni77@gmail.com', username: 'palooo', password: '@Oa0113jrj', id: '04'},
-    {name: 'Oalekan', email: 'oayeni77@gmail.com', username: 'balooo', password: '@03jnb3jrj', id: '05'},
-]
+// let Users = [
+//     {name: 'Olalekan', email: 'yayeni77@gmail.com', username: 'talooo', password: 'a03jkkj1rj', id: '01'},
+//     {name: 'Elalean', email: 'ayeni77@gmail.com', username: 'zalooo', password: '@hgds23jrj', id: '02'},
+//     {name: 'lalekan', email: 'oyeni77@gmail.com', username: 'yalooo', password: '@Oauyrjrj', id: '03'},
+//     {name: 'yelekan', email: 'gooyeni77@gmail.com', username: 'palooo', password: '@Oa0113jrj', id: '04'},
+//     {name: 'Oalekan', email: 'oayeni77@gmail.com', username: 'balooo', password: '@03jnb3jrj', id: '05'},
+// ]
 
 const SignUp = new GraphQLObjectType({
     name: 'UserSignUp',
@@ -59,6 +61,22 @@ const RootQueryType = new GraphQLObjectType({
         // }
     }
 });
+
+
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    field: {
+        addUser: {
+            type: SignUp,
+            args: {
+                name: { type: GraphQLString },
+                email: { type: GraphQLString},
+                username: { type: GraphQLString},
+                password: { type: GraphQLString},
+            }
+        }
+    }
+})
 
 module.exports= new GraphQLSchema({
     query: RootQueryType
